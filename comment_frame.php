@@ -50,7 +50,7 @@
             $date_time_now = date("Y-m-d H:i:s");
             // $userLoggedIn  =>  comment author
             
-            $insert_post = mysqli_query($con,"INSERT INTO comments VALUE ('','$post_body','$userLoggedIn','$posted_to','$date_time_now','no','$post_id')"):
+            $insert_post = mysqli_query($con,"INSERT INTO comments VALUE ('','$post_body','$userLoggedIn','$posted_to','$date_time_now','no','$post_id')");
             
             echo "<p>Comment Posted!</p>";
         }
