@@ -73,7 +73,7 @@ if(isset($_POST['register_button'])){
         array_push($error_array, "Your passwords do not match<br>");
     } else {
         if(preg_match('/[^A-Za-z0-9]/', $password)){
-            array_push($error_array, "Your password can only contain english charecters or numbers<br>");
+            array_push($error_array, "Your password can only contain english charecters and numbers<br>");
         }
     }
     if(strlen($password) > 30 || strlen($password) < 5){

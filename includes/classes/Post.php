@@ -66,7 +66,7 @@ class Post {
                 if($row['user_to'] == "none"){
                     $user_to = "";
                 } else {
-                    $user_to_obj = new User($con, $row['user_to']);
+                    $user_to_obj = new User($this->con, $row['user_to']);
                     $user_to_name = $user_to_obj->getFirstAndLastName();
                     $user_to = "to <a href='". $row['user_to'] . "'>" . $user_to_name . "</a>";
                 }
@@ -91,11 +91,41 @@ class Post {
                         $count++;
                     }
 
+                    if($added_by == $userLoggedIn){
+                        $delete_button = "<button class='delete_button btn btn-sm btn-danger px-1 py-0' id='post$id'><i class='fas fa-trash-alt'></i></button>";
+                    }else {
+                        $delete_button = "";
+                    }
+
                     $user_details_query = mysqli_query($this->con,"SELECT first_name, last_name, profile_pic FROM users WHERE username = '$added_by'");
                     $user_row = mysqli_fetch_array($user_details_query);
                     $first_name = $user_row['first_name'];
                     $last_name = $user_row['last_name'];
                     $profile_pic = $user_row['profile_pic'];
+                    ?>
+
+                    <!-- Toggle Comment section => function declaration..      -->
+                    <script type="text/javascript">
+            
+                        function toggle<?php echo $id; ?>(){
+                            
+                            var target = $(event.target);
+                            if(!target.is("a") && !target.is("button")){    // etar mane jodi a(hyper link) e click na hy thle .post_comment dekhao....
+                                var element = document.getElementById("toggleComment<?php echo $id; ?>");
+                                if(element.style.display == "block")
+                                    element.style.display = "none";
+                                else 
+                                    element.style.display = "block";
+                            }
+                            
+                        }
+                    
+                    </script>
+
+                    <?php
+
+                    $comments_check = mysqli_query($this->con, "SELECT * FROM comments WHERE post_id = '$id'");
+                    $comments_check_nums = mysqli_num_rows($comments_check);
 
                     //Timeframe
                     $date_time_now = date("Y-m-d H:i:s");
@@ -148,18 +178,27 @@ class Post {
                             $time_message = $interval->s . " seconds ago";
                     }
                     
-                    $str .= "<div class='status_post'>
+                    $str .= "<div class='status_post' onClick='javascript:toggle$id()'>
                                 <div class='status_post_profile_group'>
                                     <div class='post_profile_pic'>
                                     <img src='$profile_pic'>
                                     </div>
 
                                     <div class='posted_by'>
-                                        <a href='$added_by'> $first_name $last_name </a> $user_to &nbsp;&nbsp;&nbsp;&nbsp; <em style='font-size: 13px; color:#777;'>$time_message</em>
+                                        <div class='post_author'>
+                                            <span>
+                                                <a href='$added_by'> $first_name $last_name </a> $user_to &nbsp;&nbsp;&nbsp;&nbsp; <em style='font-size: 13px; color:#777;'>$time_message</em>
+                                            </span>
+                                            $delete_button
+                                        </div>
                                         <div id='post_body'>
-                                            $body
-                                            <div class='comment_like_text'>
-                                                <p class='post_comment_text'>Comments & Likes Goes here</p>
+                                            <p>$body</p>
+                                            <div class='commentsAndLikes'>
+                                                <p class='post_comment_text'>Comments($comments_check_nums) &nbsp;&nbsp;&nbsp;</p>
+                                                <iframe src='like.php?post_id=$id' scrolling='no'></iframe>
+                                            </div>
+                                            <div class='post_comment' id='toggleComment$id' style='display: none;'>
+                                                <iframe src='comment_frame.php?post_id=$id' id='comment_iframe'></iframe>
                                             </div>
                                         </div>
                                     </div> 
@@ -185,6 +224,247 @@ class Post {
                     // 			<hr>";
 
                     } // End isFriend
+
+            ?>
+
+                <script>
+                    $(document).ready(function() {
+                        $('#post<?php echo $id; ?>').on('click', function() {
+                            var result = confirm("Are you sure you want to delete this post?");
+                            $.post("includes/form_handlers/delete_post.php?post_id=<?php echo $id; ?>", {result:result});
+                        
+                            if(result){
+                                setTimeout(() => {
+                                    location.reload();
+                                }, 300);
+                            }
+                        });
+                    });
+                </script>
+
+
+            <?php
+
+            } // End while loop
+
+           if($count > $limit) 
+				$str .= "<input type='hidden' class='nextPage' value='" . ($page + 1) . "'>
+							<input type='hidden' class='noMorePosts' value='false'>";
+			else 
+                $str .= "<input type='hidden' class='noMorePosts' value='true'><p style='text-align: centre;'> No more posts to show! </p>";
+                
+                // if($count > $limit) 
+                //     $str .= "<input type='hidden' class='nextPage' value='" . ($page + 1) . "'>
+				// 			<input type='hidden' class='noMorePosts' value='false'>";
+                // else 
+                //     $str .= "<input type='hidden' class='noMorePosts' value='true'><p style='text-align: centre;'> No more posts to show! </p>";
+        }
+
+        echo $str;
+    }
+
+    public function loadProfilePosts ($data,$limit){
+
+        $page = $data['page'];
+        $profileUser = $data['profileUsername'];
+        $userLoggedIn = $this->user_obj->getUsername();
+        if($page == 1)
+            $start = 0;
+        else 
+            $start = ($page - 1) * $limit;
+        
+        $str = "";
+        $data_query = mysqli_query($this->con,"SELECT * FROM posts WHERE deleted = 'no' AND ((added_by = '$profileUser' AND user_to = 'none') OR user_to = '$profileUser') ORDER BY id DESC");
+        if(mysqli_num_rows($data_query)){
+
+            $num_itrations = 0; // Number of results checked(not necassarily)
+            $count = 1;
+
+            while($row = mysqli_fetch_array($data_query)){
+                $id = $row['id'];
+                $body = $row['body'];
+                $added_by = $row['added_by'];
+                $date_time = $row['date_added'];
+
+                //Prepare user_to string so it can be included even if not posted to user
+                // if($row['user_to'] == "none"){
+                //     $user_to = "";
+                // } else {
+                //     $user_to_obj = new User($this->con, $row['user_to']);
+                //     $user_to_name = $user_to_obj->getFirstAndLastName();
+                //     $user_to = "to <a href='". $row['user_to'] . "'>" . $user_to_name . "</a>";
+                // }
+                
+                //User account status => closed or not
+                // NOT NEEDED IN PROFILE PAGE
+                
+                //Only showing friends posts...IMPORTANT!!!
+                // NOT NEEDED IN PROFILE PAGE
+
+
+                    if($num_itrations++ < $start)
+                        continue; // 'continue' simply means DO NOT EXECUTE anycode while condition is met...Super important.!!!!.
+
+                    // once 10 posts have been loaded..then break...
+                    if($count > $limit){
+                        break;
+                    } else {
+                        $count++;
+                    }
+
+                    if($added_by == $userLoggedIn){
+                        $delete_button = "<button class='delete_button btn btn-sm btn-danger px-1 py-0' id='post$id'><i class='fas fa-trash-alt'></i></button>";
+                    }else {
+                        $delete_button = "";
+                    }
+
+                    $user_details_query = mysqli_query($this->con,"SELECT first_name, last_name, profile_pic FROM users WHERE username = '$added_by'");
+                    $user_row = mysqli_fetch_array($user_details_query);
+                    $first_name = $user_row['first_name'];
+                    $last_name = $user_row['last_name'];
+                    $profile_pic = $user_row['profile_pic'];
+                    ?>
+
+                    <!-- Toggle Comment section => function declaration..      -->
+                    <script type="text/javascript">
+            
+                        function toggle<?php echo $id; ?>(){
+                            
+                            var target = $(event.target);
+                            if(!target.is("a") && !target.is("button")){    // etar mane jodi a(hyper link) e click na hy thle .post_comment dekhao....
+                                var element = document.getElementById("toggleComment<?php echo $id; ?>");
+                                if(element.style.display == "block")
+                                    element.style.display = "none";
+                                else 
+                                    element.style.display = "block";
+                            }
+                            
+                        }
+                    
+                    </script>
+
+                    <?php
+
+                    $comments_check = mysqli_query($this->con, "SELECT * FROM comments WHERE post_id = '$id'");
+                    $comments_check_nums = mysqli_num_rows($comments_check);
+
+                    //Timeframe
+                    $date_time_now = date("Y-m-d H:i:s");
+                    $start_date = new DATETIME($date_time);  // current time
+                    $end_date = new DATETIME($date_time_now);  // time of a post
+                    $interval = $start_date->diff($end_date);  // Difference between two time
+                    if($interval->y >= 1){
+                        if($interval == 1)
+                            $time_message = $interval-y . " year ago";  // 1 year ago
+                        else 
+                            $time_message = $interval-y . " years ago";  // 1+ year ago
+                    }
+                    else if($interval->m >= 1){
+                        if($interval->d == 0)
+                            $days = " ago";
+                        else if ($interval->d == 1){
+                            $days = $interval->d ." day ago";
+                        }
+                        else {
+                            $days = $interval->d ." days ago";
+                        }
+
+                        if($interval->m == 1)
+                            $time_message = $interval->m . " month" . $days;
+                        else
+                            $time_message = $interval->m . " months" . $days;
+                    }
+                    else if ($interval->d >=1){
+                        if($interval->d == 1)
+                            $time_message = " Yesterday";
+                        else 
+                            $time_message = $interval->d . " days ago";
+                    }
+                    else if($interval->h >= 1){
+                        if($interval->h == 1)
+                            $time_message = $interval->h . " hour ago";
+                        else
+                            $time_message = $interval->h . " hours ago";
+                    }
+                    else if($interval->i >= 1){
+                        if($interval->i == 1)
+                            $time_message = $interval->i . " minute ago";
+                        else
+                            $time_message = $interval->i . " minutes ago";
+                    }
+                    else {
+                        if($interval->s < 30)
+                            $time_message = " just now";
+                        else
+                            $time_message = $interval->s . " seconds ago";
+                    }
+                    
+                    $str .= "<div class='status_post' onClick='javascript:toggle$id()'>
+                                <div class='status_post_profile_group'>
+                                    <div class='post_profile_pic'>
+                                    <img src='$profile_pic'>
+                                    </div>
+
+                                    <div class='posted_by'>
+                                        <div class='post_author'>
+                                            <span>
+                                                <a href='$added_by'> $first_name $last_name </a> &nbsp;&nbsp;&nbsp;&nbsp; <em style='font-size: 13px; color:#777;'>$time_message</em>
+                                            </span>
+                                            $delete_button
+                                        </div>
+                                        <div id='post_body'>
+                                            <p>$body</p>
+                                            <div class='commentsAndLikes'>
+                                                <p class='post_comment_text'>Comments($comments_check_nums) &nbsp;&nbsp;&nbsp;</p>
+                                                <iframe src='like.php?post_id=$id' scrolling='no'></iframe>
+                                            </div>
+                                            <div class='post_comment' id='toggleComment$id' style='display: none;'>
+                                                <iframe src='comment_frame.php?post_id=$id' id='comment_iframe'></iframe>
+                                            </div>
+                                        </div>
+                                    </div> 
+                                </div>
+                            </div>
+                            <hr>
+                            ";
+
+                    // $str .= "<div class='status_post'>
+                    // 				<div class='post_profile_pic'>
+                    // 					<img src='$profile_pic' width='50'>
+                    // 				</div>
+
+                    // 				<div class='posted_by' style='color:#ACACAC;'>
+                    // 					<a href='$added_by'> $first_name $last_name </a> $user_to &nbsp;&nbsp;&nbsp;&nbsp;$time_message
+                    // 				</div>
+                    // 				<div id='post_body'>
+                    // 					$body
+                    // 					<br>
+                    // 				</div>
+
+                    // 			</div>
+                    // 			<hr>";
+
+                     // End isFriend
+
+            ?>
+
+                <script>
+                    $(document).ready(function() {
+                        $('#post<?php echo $id; ?>').on('click', function() {
+                            var result = confirm("Are you sure you want to delete this post?");
+                            $.post("includes/form_handlers/delete_post.php?post_id=<?php echo $id; ?>", {result:result});
+                        
+                            if(result){
+                                setTimeout(() => {
+                                    location.reload();
+                                }, 300);
+                            }
+                        });
+                    });
+                </script>
+
+
+            <?php
 
             } // End while loop
 
