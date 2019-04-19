@@ -149,9 +149,9 @@ class Post {
                         }
 
                         if($interval->m == 1)
-                            $time_message = $interval->m . " month" . $days;
+                            $time_message = $interval->m . " month " . $days;
                         else
-                            $time_message = $interval->m . " months" . $days;
+                            $time_message = $interval->m . " months " . $days;
                     }
                     else if ($interval->d >=1){
                         if($interval->d == 1)
@@ -370,9 +370,9 @@ class Post {
                         }
 
                         if($interval->m == 1)
-                            $time_message = $interval->m . " month" . $days;
+                            $time_message = $interval->m . " month " . $days;
                         else
-                            $time_message = $interval->m . " months" . $days;
+                            $time_message = $interval->m . " months " . $days;
                     }
                     else if ($interval->d >=1){
                         if($interval->d == 1)

@@ -1,7 +1,8 @@
 <?php 
 include("includes/header.php");
 
-// session_destroy();
+$message_obj = new Message($con, $userLoggedIn);
+
 if(isset($_GET['profile_username'])){
     $username = $_GET['profile_username'];
     $user_details_query = mysqli_query($con, "SELECT * FROM users WHERE username = '$username'");
@@ -9,6 +10,7 @@ if(isset($_GET['profile_username'])){
 
     $num_friends = (substr_count($user_array['friend_array'],",")) - 1;    // (num of commas - 1) => num of friends 
 }
+
 
 if (isset($_POST['remove_friend'])){
     $user = new User($con, $userLoggedIn);
@@ -22,6 +24,22 @@ if (isset($_POST['add_friend'])){
 
 if (isset($_POST['respond_request'])){
     header("Location: requests.php");
+}
+
+if(isset($_POST['post_message'])){
+    if(isset($_POST['message_body'])){
+        $body = mysqli_real_escape_string($con, $_POST['message_body']);
+        $date = date("Y-m-d H:i:s");
+        $message_obj->sendMessage($username, $body, $date);
+    }
+
+    $link = '#profileTabs a[href="#messages_div"]';
+
+    echo "<script>
+            $(function(){
+                $('". $link ."').tab('show');
+            })
+    </script>";
 }
 
 ?>
@@ -81,10 +99,49 @@ if (isset($_POST['respond_request'])){
 
     <!-- RIGHT SECTION  newsfeed-section -->
     <div class="newsfeed_right_column column">
-        <div class="posts_area"></div> 
-        <!-- .posts_area => this class is used for ajax call.We are selecting this div through ajax and showing all posts within this div -->
-       
-        <img id="loading" src="assets/images/icons/loading.gif" alt="loading.gif"> <!-- Gif file -->
+        
+        <!-- Bootstrap nav tabs -->
+        <ul class="nav nav-tabs mb-4" id="profileTabs" role="tablist">
+            <li class="nav-item">
+                <a class="nav-link active" href="#newsfeed_div" aria-controls="newsfeed_div" data-toggle="tab" role="tab">Newsfeed</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="#messages_div" aria-controls="messages_div" data-toggle="tab" role="tab">Messages</a>
+            </li>
+        </ul>
+
+        <!-- Bootstrap nav-tabs CONTENT -->
+        <div class="tab-content" id="myTabContent">
+            <div class="tab-pane fade show active" id="newsfeed_div" role="tabpanel" aria-labelledby="newsfeed-tab">
+                <div class="posts_area"></div> 
+                <!-- .posts_area => this class is used for ajax call.We are selecting this div through ajax and showing all posts within this div -->
+                <img id="loading" src="assets/images/icons/loading.gif" alt="loading.gif"> <!-- Gif file -->
+            </div> <!-- End newsfeed-tab -->
+
+            <div class="tab-pane fade" id="messages_div" role="tabpanel" aria-labelledby="messages-tab">
+                <?php 
+                    echo "<h4>You and <a href='" . $username . "'>". $profile_user_obj->getFirstAndLastName() ."</a></h4><hr><br>";
+                    echo "<div class='loaded_messages' id='scroll_message'>";
+                    echo $message_obj->getMessages($username);
+                    echo "</div>";
+                ?> 
+
+                <div class="messages_post">
+                    <form action="" class="" method="POST">
+                        <textarea name='message_body' class='form-control' id='message_textarea' placeholder='Write your message ...'></textarea>
+                        <input type='submit' value='Send' name='post_message' id='message_submit' class='btn btn-dark btn-lg rounded'>
+                    </form>
+                </div> <!--End message_post -->
+
+                <script>
+                    $('a[data-toggle="tab"]').on('shown.bs.tab', function () {   // this line comes from Bootstrap docs...
+                        var div = document.getElementById("scroll_message");
+                        div.scrollTop = div.scrollHeight;
+                    });
+                </script>    
+
+            </div> <!-- End messages-tab -->
+        </div> <!-- End Bootstrap nav-tabs CONTENT -->
 
     </div> <!-- End newsfeed column -->
 

@@ -14,3 +14,14 @@ $(document).ready(function() {
 		});
 	});
 });
+
+function getUsers(value, user) {
+	console.log('Function was called');
+
+	$.post('includes/handlers/ajax_friend_search.php', { query: value, userLoggedIn: user }, function(data) {
+		console.log('Ajax success handler was called');
+		console.log('Data returned:' + data);
+
+		$('.results').html(data);
+	});
+}

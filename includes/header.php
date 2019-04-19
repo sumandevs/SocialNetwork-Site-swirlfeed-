@@ -2,6 +2,7 @@
 require 'config/config.php'; 
 include("includes/classes/User.php");
 include("includes/classes/Post.php");
+include("includes/classes/Message.php");
 
  
 if(isset($_SESSION['username'])){
@@ -54,7 +55,7 @@ if(isset($_SESSION['username'])){
             <a href="<?php echo $user['username'];?>">
                 <?php echo $user['first_name']; ?>
             </a>
-            <a href="#"><i class="far fa-envelope fa-lg"></i></a>
+            <a href="messages.php"><i class="far fa-envelope fa-lg"></i></a>
             <a href="index.php"><i class="fas fa-home fa-lg"></i></a>
             <a href="#"><i class="far fa-bell fa-lg"></i></a>
             <a href="requests.php"><i class="fas fa-users fa-lg"></i></a>

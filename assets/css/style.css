@@ -564,3 +564,172 @@ iframe body {
 #ignore_button:hover {
 	background-color: #fb0e25;
 }
+
+/* ================ messages.php Styling    ===================== */
+
+.messages_post {
+	width: 100%;
+	position: relative;
+}
+
+#message_textarea {
+	width: 80%;
+}
+
+#message_submit {
+	position: absolute;
+	left: 82%;
+	top: 8%;
+}
+
+.loaded_messages {
+	/*  messages loading div  */
+	width: 100%;
+	margin-bottom: 2rem;
+	height: 65%;
+	min-height: 250px;
+	max-height: 500px;
+	overflow-y: scroll;
+	background-color: #f5faff;
+	padding: 1rem 1rem;
+}
+
+.message {
+	display: inline-block;
+	padding: .8rem 1rem;
+	border: 1px solid transparent;
+	border-radius: 2.5rem;
+}
+
+.message#blue {
+	float: right;
+}
+
+.message#green {
+	float: left;
+}
+
+/* ======== SCROLLBAR OF LOADED MESSAGE DIV ======== */
+
+.loaded_messages::-webkit-scrollbar {
+	width: 20px;
+	border-radius: 10px;
+	/* background-color: #0b4e6b; */
+}
+
+.loaded_messages::-webkit-scrollbar-thumb {
+	height: 5px;
+	border-radius: 10px;
+	box-shadow: inset 0px 0px 10px rgba(0, 0, 0, .2);
+	background: #0052d4; /* fallback for old browsers */
+	background: -webkit-linear-gradient(to bottom, #0a79df, #74b9ff); /* Chrome 10-25, Safari 5.1-6 */
+	background: linear-gradient(
+		to bottom,
+		#0a79df,
+		#74b9ff
+	); /* W3C, IE 10+/ Edge, Firefox 16+, Chrome 26+, Opera 12+, Safari 7+ */
+}
+.loaded_messages::-webkit-scrollbar-track {
+	box-shadow: inset 0px 0px 10px rgba(0, 0, 0, .2);
+	border-radius: 10px;
+	background-color: #71d8ff;
+}
+/* ==================================================== */
+/* LATEST CONVERSATION (left hand) */
+.loaded_conversations {
+	min-height: 10rem;
+	max-height: 25rem;
+	overflow-x: hidden;
+	overflow-y: scroll;
+	position: relative;
+}
+.user_found_messages {
+	display: flex;
+	flex-direction: row;
+	padding: 1rem .5rem;
+	transition: all .2s ease;
+}
+.user_found_messages:hover {
+	background-color: #dfe6e9;
+	border-radius: 2px;
+}
+.user_details .latest_convo_user_img {
+	width: 50px;
+	height: 50px;
+}
+.user_content {
+	margin-left: 10px;
+}
+.user_content .user_content_name {
+	font-size: 1rem;
+	font-weight: 600;
+	font-family: 'Lato', sans-serif;
+}
+.user_content .timestamp_smaller {
+	font-size: .65rem;
+	margin-left: 3px;
+}
+.user_content .user_content_text {
+	font-size: .8rem;
+}
+#grey {
+	color: grey;
+}
+.latest_convo_hr {
+	margin: 0px 0px;
+}
+.loaded_conversations::-webkit-scrollbar {
+	width: 10px;
+	border-radius: 10px; /* background-color: #0b4e6b; */
+}
+.loaded_conversations::-webkit-scrollbar-thumb {
+	height: 10px !important;
+	max-height: 15px !important;
+	border-radius: 10px;
+	box-shadow: inset 0px 0px 10px rgba(0, 0, 0, .2);
+	background: #141415; /* fallback for old browsers */
+	background: -webkit-linear-gradient(to bottom, #3d3d3d, #5a5a5a); /* Chrome 10-25, Safari 5.1-6 */
+	background: linear-gradient(
+		to bottom,
+		#141415,
+		#3e3e3e
+	); /* W3C, IE 10+/ Edge, Firefox 16+, Chrome 26+, Opera 12+, Safari 7+ */
+}
+.loaded_conversations::-webkit-scrollbar-track {
+	box-shadow: inset 0px 0px 10px rgba(0, 0, 0, .2);
+	border-radius: 10px;
+	background-color: #b8b8b8;
+}
+/* ========= Search box for new conversations STYLING */
+.results {
+	margin-top: 3rem;
+}
+.resultDisplay {
+	padding: 1rem 1.8rem;
+	transition: all .2s ease;
+}
+.resultDisplay a {
+	text-decoration: none;
+}
+.liveSearchProfilePic {
+	margin-right: 1.5rem;
+}
+.liveSearchProfilePic img {
+	width: 50px;
+	height: 50px;
+	border-radius: 50px;
+}
+.resultDisplay:hover {
+	background-color: #dfe6e9;
+	border-radius: 2px;
+}
+.new_convo_hr {
+	margin: 0px 0px !important;
+}
+.liveSearchText .name {
+	margin: 0px 0px 10px 0px;
+	font-weight: 600;
+}
+.liveSearchText .friends_common {
+	font-size: .85rem;
+}
