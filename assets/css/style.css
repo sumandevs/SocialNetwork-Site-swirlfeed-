@@ -733,3 +733,139 @@ iframe body {
 .liveSearchText .friends_common {
 	font-size: .85rem;
 }
+
+/* ========== Drop Down messages Box Styling ============================= */
+.dropdown_data_window {
+	background-color: #fdfdfd;
+    max-height: 300px;
+	overflow-y: scroll;
+	overflow-x: hidden;
+    position: absolute;
+    top: 107%;
+    right: 1%;
+	width: 290px;
+	border-radius: 0px 0px 8px 8px;
+	box-shadow: 0px .2rem .7rem rgba(0, 0, 0, .2);
+}
+.dropdown_data_window .user_found_messages_dropdown {
+	display: flex;
+	flex-direction: row;
+	padding: .6rem .3rem;
+	transition: all .2s ease;
+}
+.user_found_messages_dropdown:hover {
+	background-color: #dfe6e9;
+	border-radius: 2px;
+}
+.latest_convo_user_img_dropdown {
+	width: 50px;
+	height: 50px;
+}
+.user_content_dropdown {
+	margin-left: 6px;
+}
+.user_content_dropdown .user_content_name_dropdown {
+	font-size: .85rem;
+	font-weight: 600;
+	font-family: 'Lato', sans-serif;
+}
+.user_content_dropdown .timestamp_smaller_dropdown {
+	font-size: .65rem;
+	margin-left: 3px;
+}
+.user_content_dropdown .user_content_text_dropdown {
+	font-size: .8rem;
+}
+.latest_convo_hr_dropdown {
+	margin: 0px 0px;
+}
+.dropdown_data_window::-webkit-scrollbar {
+	width: 10px;
+	border-radius: 10px; /* background-color: #0b4e6b; */
+}
+.dropdown_data_window::-webkit-scrollbar-thumb {
+	height: 10px !important;
+	max-height: 15px !important;
+	border-radius: 10px;
+	box-shadow: inset 0px 0px 10px rgba(0, 0, 0, .2);
+	background: #141415; /* fallback for old browsers */
+	background: -webkit-linear-gradient(to bottom, #3d3d3d, #5a5a5a); /* Chrome 10-25, Safari 5.1-6 */
+	background: linear-gradient(
+		to bottom,
+		#141415,
+		#3e3e3e
+	); /* W3C, IE 10+/ Edge, Firefox 16+, Chrome 26+, Opera 12+, Safari 7+ */
+}
+.dropdown_data_window::-webkit-scrollbar-track {
+	box-shadow: inset 0px 0px 10px rgba(0, 0, 0, .2);
+	border-radius: 10px;
+	background-color: #d4d4d4;
+}
+
+/* Notification Badge styling */
+.notification_badge {
+	width: 20px;
+    display: inline-block;
+    position: absolute;
+    top: -3px;
+    left: 25px;
+    padding: 0px;
+    background: red;
+    border-radius: 29px;
+    font-size: 17px;
+    font-weight: 700;
+    height: 20px;
+    line-height: 20px;
+    text-align: center;
+}
+
+
+/* NOTOFICATION DROP DOWN STYLING */
+.notificationDisplay {
+	display: flex;
+	flex-direction: row;
+	justify-content: space-between;
+	width: 100%;
+	/* flex-wrap: wrap; */
+	padding: 10px 5px;
+	height: auto;
+	box-sizing: border-box;
+	transition: all .25s ease;
+} 
+.notificationDisplay:hover {
+	background-color: #dfe6e9;
+}  
+.notificationsProfilePic {
+	width: 40px !important;
+	height: 40px !important;
+	box-sizing: border-box;
+}
+.notificationsProfilePic img {
+	width: 100% !important;
+	height: 100% !important;
+	border-radius: 50%;
+}
+.notificationContent {
+	width: 80%;
+	/* background: lightgreen; */
+	padding-top: 3px;
+	/* padding-left: 8px; */
+	box-sizing: border-box;
+}
+.notification_msg_body {
+	font-size: 13px;
+	font-weight: 600;
+	margin: 0;
+	margin-bottom: 5px;
+	
+}
+.notificationContent .timestamp_smaller {
+	font-size: 12px;
+	font-weight: 500;
+	font-style: italic;
+	margin-bottom: 5px;
+}
+.notification_hr_dropdown {
+	margin: 0;
+}
+

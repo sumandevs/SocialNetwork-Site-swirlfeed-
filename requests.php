@@ -43,7 +43,7 @@ include("includes/header.php");
                 <hr>
 
     <?php
-            }
+            } //end while loop
         }
     ?>
 

@@ -213,7 +213,7 @@ if(isset($_POST['post_message'])){
                     cache:false,
                     success: function(response) {
         
-                        $('.posts_area').find('.nextPage').remove(); //Removes current .nextpage
+                        $('.posts_area').find('.nextPage').remove(); //R emoves current .nextpage
                         $('.posts_area').find('.noMorePosts').remove(); //Removes current .nextpage
                         $('.posts_area').find('.noMorePostsText').remove(); //Removes current .nextpage
                         $('#loading').hide();

@@ -161,6 +161,91 @@ class Message {
         return $return_string;
 
     }
+
+    public function getConvosDropdown($data, $limit) {
+        $page = $data['page'];
+        $userLoggedIn = $this->user_obj->getUsername();
+        $return_string = "";
+        $convos = array();
+
+        if($page == 1)
+            $start = 0;
+        else {
+            $start = ($page -1) * $limit;
+        }
+
+        $set_viewed_query = mysqli_query($this->con, "UPDATE messages SET viewed = 'yes' WHERE user_to = '$userLoggedIn'");
+
+        
+
+        $query = mysqli_query($this->con, "SELECT user_to, user_from FROM messages WHERE user_to = '$userLoggedIn' OR user_from = '$userLoggedIn' ORDER BY id DESC");
+
+        while($row = mysqli_fetch_array($query)){
+            $user_to_push = ($row['user_to'] != $userLoggedIn) ? $row['user_to'] : $row['user_from'];
+
+            if(!in_array($user_to_push, $convos)){ 
+                array_push($convos, $user_to_push);
+            }
+        
+        }
+
+        $num_of_iterations = 0; // Number of messages checked
+        $count = 1;
+
+        foreach($convos as $username){
+    
+            if($num_of_iterations++ < $start)
+                continue;
+            if($count > $limit)
+                break;
+            else {
+                $count++;
+            }
+
+            $is_unread_query = mysqli_query($this->con, "SELECT opened FROM messages WHERE user_to = '$userLoggedIn' AND user_from = '$username' ORDER BY id DESC");
+            // ey query tar mane holo amk jodi keu sms send kore ebong sei sms ta latest hoy(DESC) thle seta k select koro
+            $row = mysqli_fetch_array($is_unread_query);
+            $style = ($row['opened'] == 'no') ? "background-color: #DDEDFF;" : "";
+
+            $user_found_obj = new User($this->con,$username);
+            $latest_message_details = $this->getLatestMessage($userLoggedIn,$username);   //$latest_message_details = $details_query      -- which is an array
+
+            $dots = (strlen($latest_message_details[1]) >= 12) ? "..." : "";
+            $split = str_split($latest_message_details[1], 12);
+            $split = $split[0] . $dots;
+
+            $return_string .= "<a href='messages.php?u=$username' style='text-decoration: none;'>
+                                    <div class='user_found_messages_dropdown' style='". $style ."'>
+                                        <img src='" . $user_found_obj->getProfilePic() . "' style='border-radius: 50px; margin-right: 5px;' class='latest_convo_user_img_dropdown'>
+                                        <div class='user_content_dropdown'>
+                                        <span class='user_content_name_dropdown'>" . $user_found_obj->getFirstAndLastName() ."</span>
+                                        <span class='timestamp_smaller_dropdown' id='grey'>" . $latest_message_details[2] . "</span>
+                                        <p class='user_content_text_dropdown mt-2' id='grey' style='margin: 0px;'>".$latest_message_details[0] . $split ."</p>
+                                        </div>
+                                        </div>   
+                                        <hr class='latest_convo_hr_dropdown'>
+                                        </a>";
+                                
+        } // End foreach
+        
+        // if all messages are loaded
+        if($count > $limit){
+            $return_string .= "<input type='hidden' class='nextPageDropdownData' value='". ($page + 1) ."'><input type='hidden' class='noMoreDropdownData' value='false'>";
+        }     
+         else {
+            $return_string .= "<input type='hidden' class='noMoreDropdownData' value='true'><p style='text-align: center; font-size: .82rem; color: grey; font-style: italic; font-family: cursive;' class='mt-2'>No more messages to show...</p>";
+         }
+        
+
+        
+        return $return_string;
+    }
+
+    public function getUnreadNumber () {
+        $userLoggedIn = $this->user_obj->getUsername();
+        $query = mysqli_query($this->con, "SELECT * FROM messages WHERE viewed='no' AND user_to = '$userLoggedIn'");
+        return $num_unread_mesaages = mysqli_num_rows($query);
+    }
     
 }
 
